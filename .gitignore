@@ -1,0 +1,11 @@
+./src/*
+!/src/.remove-this-file-then-git-clone
+/mysql/*
+!/mysql/db/.gitkeep
+/redis/*
+!/redis/.keep
+.idea
+.env
+
+/swag/config/
+/data/*

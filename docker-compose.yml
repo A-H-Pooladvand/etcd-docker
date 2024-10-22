@@ -1,0 +1,38 @@
+services:
+  etcd:
+    image: bitnami/etcd:3.5.9
+    container_name: etcd
+    restart: unless-stopped
+    environment:
+#      - ETCD_ROOT_PASSWORD=1
+#      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_LISTEN_CLIENT_URLS=https://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=https://localhost:2379
+      - ETCD_LISTEN_PEER_URLS=https://0.0.0.0:2380
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=https://localhost:2380
+      - ETCD_INITIAL_CLUSTER=etcd0=https://localhost:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_CERT_FILE=/certs/server.pem
+      - ETCD_KEY_FILE=/certs/server-key.pem
+      - ETCD_TRUSTED_CA_FILE=/certs/ca.pem
+      - ETCD_CLIENT_CERT_AUTH=true
+      - ETCD_PEER_CERT_FILE=/certs/peer.pem
+      - ETCD_PEER_KEY_FILE=/certs/peer-key.pem
+      - ETCD_PEER_TRUSTED_CA_FILE=/certs/ca.pem
+      - ETCD_PEER_CLIENT_CERT_AUTH=true
+    volumes:
+      - ./certs:/certs:rw
+      - etcd-data:/bitnami/etcd/data
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    healthcheck:
+      test: ["CMD", "etcdctl", "--endpoints=https://127.0.0.1:2379", "--cacert=/certs/ca.pem", "--cert=/certs/server.pem", "--key=/certs/server-key.pem", "member", "list"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  etcd-data:
